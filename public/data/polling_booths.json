@@ -1,0 +1,29 @@
+[
+  {
+    "id": "booth_1",
+    "name": "Central High School",
+    "address": "123 Main St, Springfield",
+    "lat": 37.7749,
+    "lng": -122.4194,
+    "wait_time_mins": 15,
+    "accessibility_features": ["Wheelchair Ramp", "Braille Ballots"]
+  },
+  {
+    "id": "booth_2",
+    "name": "Springfield Community Center",
+    "address": "456 Oak Ave, Springfield",
+    "lat": 37.7850,
+    "lng": -122.4050,
+    "wait_time_mins": 5,
+    "accessibility_features": ["Wheelchair Ramp"]
+  },
+  {
+    "id": "booth_3",
+    "name": "Westside Library",
+    "address": "789 Pine Ln, Springfield",
+    "lat": 37.7600,
+    "lng": -122.4300,
+    "wait_time_mins": 30,
+    "accessibility_features": ["Sign Language Interpreter"]
+  }
+]

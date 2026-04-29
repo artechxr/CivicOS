@@ -1,0 +1,29 @@
+[
+  {
+    "id": "cand_1",
+    "name": "Jane Doe",
+    "party": "Progressive Alliance",
+    "education": "Ph.D. in Public Policy, Stanford University",
+    "assets": "$1.2 Million",
+    "criminal_records": "None",
+    "verified": true
+  },
+  {
+    "id": "cand_2",
+    "name": "John Smith",
+    "party": "Conservative Coalition",
+    "education": "J.D., Harvard Law School",
+    "assets": "$3.5 Million",
+    "criminal_records": "1 minor traffic violation (2015)",
+    "verified": true
+  },
+  {
+    "id": "cand_3",
+    "name": "Alex Johnson",
+    "party": "Independent",
+    "education": "B.S. Engineering, MIT",
+    "assets": "$850,000",
+    "criminal_records": "None",
+    "verified": false
+  }
+]
