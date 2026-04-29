@@ -1,3 +1,5 @@
+import { KnowledgeResponse } from '../data/knowledgeBase';
+
 const translationCache = new Map<string, string>();
 
 /**
@@ -58,7 +60,7 @@ export async function translateText(text: string, targetLang: string, sourceLang
  * Translates a structured KnowledgeResponse object's text fields.
  * Handles headings, steps, and tips individually.
  */
-export async function translateStructuredResponse(data: Record<string, unknown>, targetLang: string): Promise<Record<string, unknown>> {
+export async function translateStructuredResponse(data: KnowledgeResponse, targetLang: string): Promise<KnowledgeResponse> {
   if (targetLang === 'en') return data; // No translation needed
 
   try {
@@ -72,7 +74,7 @@ export async function translateStructuredResponse(data: Record<string, unknown>,
       (data.tips || []).map((tip: string) => translateText(tip, targetLang))
     );
 
-    let translatedTable = null;
+    let translatedTable = undefined;
     if (data.table) {
       // If there's a table, translate headers and rows
       translatedTable = {

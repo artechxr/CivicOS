@@ -42,10 +42,12 @@ import { translateStructuredResponse, translateText } from '@/utils/translator';
 import { getDbInstance } from '@/services/firebase';
 import { collection, addDoc, query, where, orderBy, getDocs, limit, serverTimestamp } from 'firebase/firestore';
 
+import { KnowledgeResponse } from '@/data/knowledgeBase';
+
 interface Message {
   role: 'user' | 'assistant';
   content: string; 
-  data?: Record<string, unknown> | null;      
+  data?: KnowledgeResponse | null;      
 }
 
 interface UserProfile {
@@ -156,7 +158,7 @@ export default function ChatPanel() {
     setActiveScenario(null);
   };
 
-  const saveToFirestore = async (prompt: string, responseText: string, structuredData?: Record<string, unknown> | null) => {
+  const saveToFirestore = async (prompt: string, responseText: string, structuredData?: KnowledgeResponse | null) => {
     if (user && !isGuest) {
       try {
         const db = getDbInstance();
@@ -272,7 +274,7 @@ export default function ChatPanel() {
      handleSend(intentToQuery[intentKey] || intentKey);
   };
 
-  const renderStructuredData = (data: Record<string, unknown>) => {
+  const renderStructuredData = (data: KnowledgeResponse) => {
     return (
       <Box>
         <Typography variant="body2" sx={{ mb: 2, fontWeight: 500 }}>{data.explanation}</Typography>
@@ -491,7 +493,7 @@ export default function ChatPanel() {
       </Paper>
 
       {/* Onboarding Profile Modal */}
-      <Dialog open={showProfileSetup} disableEscapeKeyDown={true}>
+      <Dialog open={showProfileSetup}>
         <DialogTitle sx={{ fontWeight: 700 }}>Personalize Your Assistant</DialogTitle>
         <DialogContent>
           <Typography variant="body2" sx={{ mb: 3 }}>Help us tailor our guidance to your needs.</Typography>
