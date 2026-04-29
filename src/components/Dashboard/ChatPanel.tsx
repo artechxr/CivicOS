@@ -232,7 +232,7 @@ export default function ChatPanel() {
       // 2. Detect Intent with context
       const resultData = await detectIntent(trimmedText, language, lastContext);
       
-      let currentResultData = resultData || getGeneralGuide();
+      const currentResultData = resultData || getGeneralGuide();
 
       if (currentResultData) {
         setContextHistory(prev => [...prev.slice(-2), currentResultData.intent]);

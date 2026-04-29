@@ -11,9 +11,22 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
+// Ensure all API calls and firebase initializations are strictly client-side only
+// and prevent crashes if environment variables are missing.
 export const getFirebaseApp = () => {
-  if (typeof window === 'undefined') return null;
-  return !getApps().length ? initializeApp(firebaseConfig) : getApp();
+  if (typeof window === 'undefined') return null; // Server-side guard
+  
+  if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
+    console.warn("Firebase config is missing API keys. Firebase features will be disabled.");
+    return null;
+  }
+  
+  try {
+    return !getApps().length ? initializeApp(firebaseConfig) : getApp();
+  } catch (error) {
+    console.error("Firebase initialization error:", error);
+    return null;
+  }
 };
 
 export const getAuthInstance = () => {
