@@ -41,9 +41,11 @@ import { detectIntent, getGeneralGuide } from '@/utils/intentEngine';
 import { translateStructuredResponse, translateText } from '@/utils/translator';
 import { getDbInstance } from '@/services/firebase';
 import { collection, addDoc, query, where, orderBy, getDocs, limit, serverTimestamp } from 'firebase/firestore';
-import { sanitizeInput, validateLength } from '@/utils/security';
+import { sanitizeInput, validateInput } from '@/utils/security';
 
 import { KnowledgeResponse } from '@/data/knowledgeBase';
+
+type StructuredData = Record<string, unknown>;
 
 interface Message {
   role: 'user' | 'assistant';
@@ -123,12 +125,12 @@ export default function ChatPanel() {
           const querySnapshot = await getDocs(q);
           const history: Message[] = [];
           querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            history.push({ role: 'user', content: data.prompt });
+            const data = doc.data() as StructuredData;
+            history.push({ role: 'user', content: data.prompt as string });
             if (data.structuredData) {
-              history.push({ role: 'assistant', content: '', data: JSON.parse(data.structuredData) });
+              history.push({ role: 'assistant', content: '', data: JSON.parse(data.structuredData as string) as KnowledgeResponse });
             } else {
-              history.push({ role: 'assistant', content: data.response });
+              history.push({ role: 'assistant', content: data.response as string });
             }
           });
           if (history.length > 0) {
@@ -209,8 +211,8 @@ export default function ChatPanel() {
     const trimmedText = sanitizedText.trim();
     if (!trimmedText || isLoading) return;
 
-    if (!validateLength(trimmedText)) {
-      const errorMsg = await translateText("Input is too long. Please keep it under 500 characters.", language, 'en');
+    if (!validateInput(trimmedText)) {
+      const errorMsg = await translateText("Input is invalid or too long. Please keep it under 500 characters.", language, 'en');
       setMessages(prev => [...prev, { role: 'assistant', content: errorMsg }]);
       setIsLoading(false);
       return;
