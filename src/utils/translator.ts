@@ -59,6 +59,10 @@ export async function translateText(text: string, targetLang: string, sourceLang
 /**
  * Translates a structured KnowledgeResponse object's text fields.
  * Handles headings, steps, and tips individually.
+ * 
+ * @param data The KnowledgeResponse object to translate.
+ * @param targetLang The language code to translate to (e.g., 'hi', 'ta').
+ * @returns A Promise resolving to a new, translated KnowledgeResponse object.
  */
 export async function translateStructuredResponse(data: KnowledgeResponse, targetLang: string): Promise<KnowledgeResponse> {
   if (targetLang === 'en') return data; // No translation needed

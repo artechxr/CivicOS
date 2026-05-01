@@ -41,6 +41,7 @@ import { detectIntent, getGeneralGuide } from '@/utils/intentEngine';
 import { translateStructuredResponse, translateText } from '@/utils/translator';
 import { getDbInstance } from '@/services/firebase';
 import { collection, addDoc, query, where, orderBy, getDocs, limit, serverTimestamp } from 'firebase/firestore';
+import { sanitizeInput, validateLength } from '@/utils/security';
 
 import { KnowledgeResponse } from '@/data/knowledgeBase';
 
@@ -159,6 +160,7 @@ export default function ChatPanel() {
   };
 
   const saveToFirestore = async (prompt: string, responseText: string, structuredData?: KnowledgeResponse | null) => {
+    if (!user?.uid) return;
     if (user && !isGuest) {
       try {
         const db = getDbInstance();
@@ -203,8 +205,16 @@ export default function ChatPanel() {
   };
 
   const handleSend = async (text: string) => {
-    const trimmedText = text.trim();
+    const sanitizedText = sanitizeInput(text);
+    const trimmedText = sanitizedText.trim();
     if (!trimmedText || isLoading) return;
+
+    if (!validateLength(trimmedText)) {
+      const errorMsg = await translateText("Input is too long. Please keep it under 500 characters.", language, 'en');
+      setMessages(prev => [...prev, { role: 'assistant', content: errorMsg }]);
+      setIsLoading(false);
+      return;
+    }
 
     const userMessage: Message = { role: 'user', content: trimmedText };
     setMessages(prev => [...prev, userMessage]);

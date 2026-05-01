@@ -44,6 +44,7 @@ import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import DashboardCard from '@/components/Dashboard/ActionCard';
 import ChatPanel from '@/components/Dashboard/ChatPanel';
 import ElectionStats from '@/components/Dashboard/ElectionStats';
+import ElectionReadiness from '@/components/Dashboard/ElectionReadiness';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage, languages, LanguageCode } from '@/contexts/LanguageContext';
 import { useRouter } from 'next/navigation';
@@ -268,6 +269,7 @@ export default function Dashboard() {
               {/* Election Stats Section */}
               <Box sx={{ mb: 6 }}>
                 <ElectionStats />
+                <ElectionReadiness />
               </Box>
 
               {/* Did You Know Section */}

@@ -49,6 +49,15 @@ const intentMappings: IntentMap[] = [
   }
 ];
 
+/**
+ * Detects the intent of a user's input string.
+ * Uses exact keyword matching and contextual fallbacks.
+ *
+ * @param input The raw user input string.
+ * @param userLang The user's current language code (e.g., 'en', 'hi'). Defaults to 'en'.
+ * @param previousContext The intent key of the previous interaction, if any.
+ * @returns A Promise resolving to a KnowledgeResponse object, or null if no intent is found.
+ */
 export async function detectIntent(input: string, userLang: string = 'en', previousContext?: string): Promise<KnowledgeResponse | null> {
   let normalizedInput = input.toLowerCase().trim();
   
@@ -95,6 +104,11 @@ export async function detectIntent(input: string, userLang: string = 'en', previ
   return bestIntent ? knowledgeBase[bestIntent] : null;
 }
 
+/**
+ * Returns a fallback general guide when an intent cannot be detected.
+ *
+ * @returns A generic KnowledgeResponse object.
+ */
 export function getGeneralGuide(): KnowledgeResponse {
   return {
     intent: 'fallback',
