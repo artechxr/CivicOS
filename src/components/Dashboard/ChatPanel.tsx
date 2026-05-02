@@ -261,8 +261,8 @@ export default function ChatPanel() {
 
       const finalData = await translateStructuredResponse(finalResultData, language);
 
-      setMessages(prev => [...prev, { role: 'assistant', content: '', data: finalData }]);
-      saveToFirestore(trimmedText, finalData.explanation, finalData);
+      setMessages(prev => [...prev, { role: 'assistant', content: '', data: finalData as any }]);
+      saveToFirestore(trimmedText, finalData.explanation, finalData as any);
 
     } catch (error) {
       console.error("Chat Error:", error);
