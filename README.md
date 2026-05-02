@@ -70,3 +70,32 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Design Decisions
+
+- Modular architecture with separation of concerns
+- Lightweight intent engine without external APIs
+- Scalable Firebase-based backend
+
+## Edge Case Handling
+
+- Handles empty and invalid inputs safely
+- Prevents unsafe input usage
+- Graceful fallback for unknown queries
+
+## Testing Strategy
+
+- Unit tests for intent detection
+- Validation of translation structure
+- UI component rendering tests
+
+## Accessibility
+
+- ARIA labels added for better usability
+- Semantic roles used for assistive technologies
+
+## Security
+
+- Firestore rules enforce authentication
+- Input sanitization implemented
+- Security headers defined

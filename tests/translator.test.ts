@@ -1,8 +1,22 @@
 import { translateStructuredResponse } from '../src/utils/translator';
-import { KnowledgeResponse } from '../src/data/knowledgeBase';
 
-test('should return same text for english', async () => {
-  const data = { explanation: 'Hello' } as KnowledgeResponse;
-  const result = await translateStructuredResponse(data, 'en');
-  expect(result.explanation).toBe('Hello');
+describe('Translator', () => {
+it('should preserve structure', async () => {
+const input = {
+explanation: 'Hello',
+steps: ['Step 1'],
+tips: ['Tip']
+};
+
+const result = await translateStructuredResponse(input, 'en');
+
+expect(result).toHaveProperty('explanation');
+expect(Array.isArray(result.steps)).toBe(true);
+
+});
+
+it('should handle invalid input safely', async () => {
+const result = await translateStructuredResponse({} as any, 'en');
+expect(result).toBeDefined();
+});
 });

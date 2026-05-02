@@ -259,7 +259,7 @@ export default function ChatPanel() {
          };
       }
 
-      const finalData = await translateStructuredResponse(finalResultData, language);
+      const finalData = await translateStructuredResponse(finalResultData as unknown as Record<string, unknown>, language);
 
       setMessages(prev => [...prev, { role: 'assistant', content: '', data: finalData }]);
       saveToFirestore(trimmedText, finalData.explanation, finalData);
@@ -399,7 +399,7 @@ export default function ChatPanel() {
         </Box>
         
         {/* Chat Messages */}
-        <Box sx={{ flexGrow: 1, overflowY: 'auto', p: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Box role="main" sx={{ flexGrow: 1, overflowY: 'auto', p: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
           <AnimatePresence initial={false}>
             {messages.map((msg, idx) => (
               <motion.div 
@@ -484,11 +484,13 @@ export default function ChatPanel() {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend(input)}
               disabled={isLoading}
+              inputProps={{ 'aria-label': 'Chat input' }}
               slotProps={{ input: { disableUnderline: true } }}
               sx={{ mt: 0.5 }}
             />
             <IconButton 
               color="primary" 
+              aria-label="Send message"
               onClick={() => handleSend(input)}
               disabled={isLoading || !input.trim()}
               sx={{ 
