@@ -38,8 +38,23 @@ describe('intentEngine', () => {
     expect(result).toBeNull();
   });
 
-  it('should always return consistent structure', async () => {
+  it('always returns consistent structure', async () => {
     const result = await detectIntent('how to vote');
     expect(result).toHaveProperty('intent');
+  });
+
+  it('handles uppercase input', async () => {
+    const result = await detectIntent('HOW TO VOTE');
+    expect(result?.intent).toBe('voting_process');
+  });
+
+  it('handles partial queries', async () => {
+    const result = await detectIntent('vote process');
+    expect(result?.intent).toBe('voting_process');
+  });
+
+  it('returns null for empty input', async () => {
+    const result = await detectIntent('');
+    expect(result).toBeNull();
   });
 });

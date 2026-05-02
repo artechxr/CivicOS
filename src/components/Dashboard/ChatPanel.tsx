@@ -207,6 +207,14 @@ export default function ChatPanel() {
   };
 
   const handleSend = async (text: string) => {
+    if (!text || text.trim().length === 0) return;
+    if (text.length > 500) {
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: 'Input too long. Please limit to 500 characters.'
+      }]);
+      return;
+    }
     const sanitizedText = sanitizeInput(text);
     const trimmedText = sanitizedText.trim();
     if (!trimmedText || isLoading) return;

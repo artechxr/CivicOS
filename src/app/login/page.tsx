@@ -97,6 +97,7 @@ export default function LoginPage() {
 
         <form onSubmit={handleEmailLogin}>
           <TextField
+            aria-label="Email input"
             fullWidth
             label="Email"
             margin="normal"
@@ -105,6 +106,7 @@ export default function LoginPage() {
           />
 
           <TextField
+            aria-label="Password input"
             fullWidth
             label="Password"
             type="password"
@@ -113,7 +115,7 @@ export default function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          <Button fullWidth type="submit" variant="contained" sx={{ mt: 2 }} disabled={isLoggingIn}>
+          <Button aria-label="Login button" fullWidth type="submit" variant="contained" sx={{ mt: 2 }} disabled={isLoggingIn}>
             {isLoggingIn ? <CircularProgress size={20} /> : 'Login'}
           </Button>
         </form>
@@ -121,6 +123,7 @@ export default function LoginPage() {
         <Divider sx={{ my: 2 }}>OR</Divider>
 
         <Button
+          aria-label="Sign in with Google button"
           fullWidth
           variant="outlined"
           startIcon={<GoogleIcon />}
@@ -130,7 +133,7 @@ export default function LoginPage() {
           Sign in with Google
         </Button>
 
-        <Button fullWidth onClick={handleGuest} sx={{ mt: 1 }}>
+        <Button aria-label="Continue as Guest button" fullWidth onClick={handleGuest} sx={{ mt: 1 }}>
           Continue as Guest
         </Button>
       </Paper>
