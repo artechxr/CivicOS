@@ -57,10 +57,13 @@ const intentMappings: IntentMap[] = [
  * @param userLang The user's current language code (e.g., 'en', 'hi'). Defaults to 'en'.
  * @param previousContext The intent key of the previous interaction, if any.
  * @returns A Promise resolving to a KnowledgeResponse object, or null if no intent is found.
+ * Detects user intent from input text
+ * @param text user input string
+ * @returns detected intent or null
  */
 export async function detectIntent(input: string, userLang: string = 'en', previousContext?: string): Promise<KnowledgeResponse | null> {
   let normalizedInput = input.toLowerCase().trim();
-  
+
   if (!normalizedInput) return null;
 
   if (userLang !== 'en') {
@@ -79,7 +82,7 @@ export async function detectIntent(input: string, userLang: string = 'en', previ
         matches++;
       }
     }
-    
+
     if (matches > maxMatches) {
       maxMatches = matches;
       bestIntent = mapping.intent;
@@ -90,14 +93,14 @@ export async function detectIntent(input: string, userLang: string = 'en', previ
   // If no clear match, but the user is asking a follow-up (e.g. "what about state ones?")
   if (!bestIntent && previousContext) {
     if (normalizedInput.includes('state') && previousContext === 'types_of_elections') {
-       return knowledgeBase['types_of_elections']; 
+      return knowledgeBase['types_of_elections'];
     }
     if (normalizedInput.includes('how') && previousContext === 'registration') {
-       return knowledgeBase['registration'];
+      return knowledgeBase['registration'];
     }
     // Simple heuristic: if it looks like a follow up but we didn't catch keywords, stick to context
     if (normalizedInput.length < 25 && !normalizedInput.includes('?')) {
-       // Just keeping context might be confusing, so let it fall through to null for the smart fallback
+      // Just keeping context might be confusing, so let it fall through to null for the smart fallback
     }
   }
 

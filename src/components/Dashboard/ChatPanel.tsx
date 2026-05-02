@@ -1,11 +1,11 @@
 'use client';
 
-import { 
-  Box, 
-  Typography, 
-  TextField, 
-  IconButton, 
-  Paper, 
+import {
+  Box,
+  Typography,
+  TextField,
+  IconButton,
+  Paper,
   Avatar,
   useTheme,
   Tooltip,
@@ -49,8 +49,8 @@ type StructuredData = Record<string, unknown>;
 
 interface Message {
   role: 'user' | 'assistant';
-  content: string; 
-  data?: KnowledgeResponse | null;      
+  content: string;
+  data?: KnowledgeResponse | null;
 }
 
 interface UserProfile {
@@ -62,11 +62,11 @@ export default function ChatPanel() {
   const theme = useTheme();
   const { language, t } = useLanguage();
   const { user, isGuest } = useAuth();
-  
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [quickActionsTranslated, setQuickActionsTranslated] = useState<{label: string, query: string}[]>([]);
+  const [quickActionsTranslated, setQuickActionsTranslated] = useState<{ label: string, query: string }[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Context & Personalization State
@@ -74,7 +74,7 @@ export default function ChatPanel() {
   const [isDetailedMode, setIsDetailedMode] = useState(true);
   const [showProfileSetup, setShowProfileSetup] = useState(false);
   const [profile, setProfile] = useState<UserProfile>({ isFirstTime: null, state: '' });
-  
+
   // Scenario Flow State
   const [activeScenario, setActiveScenario] = useState<string | null>(null);
 
@@ -84,7 +84,7 @@ export default function ChatPanel() {
       const welcomeEn = 'Namaste! I am your CivicOS Assistant. I can help you with registration, documents, and understanding the voting process.';
       const translated = await translateText(welcomeEn, language, 'en');
       setMessages([{ role: 'assistant', content: translated }]);
-      
+
       // Trigger profile setup on first load if not set
       if (profile.isFirstTime === null) {
         setShowProfileSetup(true);
@@ -106,7 +106,7 @@ export default function ChatPanel() {
     const translateActions = async () => {
       const translated = await Promise.all(actions.map(async (a) => ({
         label: await translateText(a.labelEn, language, 'en'),
-        query: a.queryEn 
+        query: a.queryEn
       })));
       setQuickActionsTranslated(translated);
     };
@@ -142,7 +142,7 @@ export default function ChatPanel() {
       };
       loadHistory();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, isGuest]);
 
   const scrollToBottom = () => {
@@ -187,19 +187,19 @@ export default function ChatPanel() {
 
     if (activeScenario === 'lost_id') {
       if (text.toLowerCase().includes('yes')) {
-         reply = "Great! You can use your Aadhaar Card as a valid ID at the polling booth.";
-         isComplete = true;
+        reply = "Great! You can use your Aadhaar Card as a valid ID at the polling booth.";
+        isComplete = true;
       } else if (text.toLowerCase().includes('no')) {
-         reply = "No problem. You can also use a PAN card, Driving License, or a Bank Passbook with a photo.";
-         isComplete = true;
+        reply = "No problem. You can also use a PAN card, Driving License, or a Bank Passbook with a photo.";
+        isComplete = true;
       } else {
-         reply = "Please answer Yes or No. Do you have an Aadhaar Card?";
+        reply = "Please answer Yes or No. Do you have an Aadhaar Card?";
       }
     }
 
     const translatedReply = await translateText(reply, language, 'en');
     setMessages(prev => [...prev, { role: 'assistant', content: translatedReply }]);
-    
+
     if (isComplete) {
       setActiveScenario(null);
     }
@@ -240,10 +240,10 @@ export default function ChatPanel() {
 
     try {
       const lastContext = contextHistory.length > 0 ? contextHistory[contextHistory.length - 1] : undefined;
-      
+
       // 2. Detect Intent with context
       const resultData = await detectIntent(trimmedText, language, lastContext);
-      
+
       const currentResultData = resultData || getGeneralGuide();
 
       if (currentResultData) {
@@ -253,17 +253,17 @@ export default function ChatPanel() {
       // 3. Personalize Response (e.g., if first time voter, emphasize registration)
       let finalResultData = currentResultData;
       if (profile.isFirstTime && currentResultData.intent === 'voting_process') {
-         finalResultData = {
-           ...currentResultData,
-           tips: ['Welcome, First-Time Voter! Don\'t be nervous, the officials are there to help you.', ...currentResultData.tips]
-         };
+        finalResultData = {
+          ...currentResultData,
+          tips: ['Welcome, First-Time Voter! Don\'t be nervous, the officials are there to help you.', ...currentResultData.tips]
+        };
       }
 
-      const finalData = await translateStructuredResponse(finalResultData as unknown as KnowledgeResponse, language);
+      const finalData = await translateStructuredResponse(finalResultData, language);
 
       setMessages(prev => [...prev, { role: 'assistant', content: '', data: finalData }]);
       saveToFirestore(trimmedText, finalData.explanation, finalData);
-      
+
     } catch (error) {
       console.error("Chat Error:", error);
       const fallbackMsg = await translateText("I encountered an error processing that request. Please try again.", language, 'en');
@@ -274,23 +274,23 @@ export default function ChatPanel() {
   };
 
   const handleSmartSuggestion = (intentKey: string) => {
-     // Map intent keys to readable queries for the UI
-     const intentToQuery: Record<string, string> = {
-       'documents': 'What documents are required?',
-       'voting_process': 'How do I vote?',
-       'registration': 'How do I register?',
-       'political_parties': 'Tell me about political parties',
-       'types_of_elections': 'What types of elections are there?',
-       'election_day': 'What happens on election day?'
-     };
-     handleSend(intentToQuery[intentKey] || intentKey);
+    // Map intent keys to readable queries for the UI
+    const intentToQuery: Record<string, string> = {
+      'documents': 'What documents are required?',
+      'voting_process': 'How do I vote?',
+      'registration': 'How do I register?',
+      'political_parties': 'Tell me about political parties',
+      'types_of_elections': 'What types of elections are there?',
+      'election_day': 'What happens on election day?'
+    };
+    handleSend(intentToQuery[intentKey] || intentKey);
   };
 
   const renderStructuredData = (data: KnowledgeResponse) => {
     return (
       <Box>
         <Typography variant="body2" sx={{ mb: 2, fontWeight: 500 }}>{data.explanation}</Typography>
-        
+
         {isDetailedMode && data.steps && data.steps.length > 0 && (
           <Box sx={{ mb: 2 }}>
             <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1 }}>{language === 'en' ? 'Steps to Follow:' : 'कदम:'}</Typography>
@@ -337,20 +337,20 @@ export default function ChatPanel() {
         {/* Smart Suggestions */}
         {data.relatedIntents && data.relatedIntents.length > 0 && (
           <Box sx={{ mt: 3, pt: 2, borderTop: '1px dashed rgba(0,0,0,0.1)' }}>
-             <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 1 }}>
-               {language === 'en' ? 'You may also want to know:' : 'आप यह भी जानना चाह सकते हैं:'}
-             </Typography>
-             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-               {data.relatedIntents.slice(0, 3).map((intent: string, idx: number) => (
-                  <Chip 
-                    key={idx} 
-                    label={intent.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())} 
-                    size="small" 
-                    onClick={() => handleSmartSuggestion(intent)}
-                    sx={{ bgcolor: 'rgba(126, 231, 135, 0.1)', color: 'primary.dark', '&:hover': { bgcolor: 'rgba(126, 231, 135, 0.2)' } }}
-                  />
-               ))}
-             </Box>
+            <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 1 }}>
+              {language === 'en' ? 'You may also want to know:' : 'आप यह भी जानना चाह सकते हैं:'}
+            </Typography>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+              {data.relatedIntents.slice(0, 3).map((intent: string, idx: number) => (
+                <Chip
+                  key={idx}
+                  label={intent.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                  size="small"
+                  onClick={() => handleSmartSuggestion(intent)}
+                  sx={{ bgcolor: 'rgba(126, 231, 135, 0.1)', color: 'primary.dark', '&:hover': { bgcolor: 'rgba(126, 231, 135, 0.2)' } }}
+                />
+              ))}
+            </Box>
           </Box>
         )}
       </Box>
@@ -359,13 +359,13 @@ export default function ChatPanel() {
 
   return (
     <>
-      <Paper 
+      <Paper
         elevation={0}
-        sx={{ 
-          height: '100%', 
-          display: 'flex', 
-          flexDirection: 'column', 
-          bgcolor: '#FFFFFF', 
+        sx={{
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          bgcolor: '#FFFFFF',
           borderRadius: 4,
           border: '1px solid rgba(0,0,0,0.05)',
           overflow: 'hidden',
@@ -385,7 +385,7 @@ export default function ChatPanel() {
               </Typography>
             </Box>
           </Box>
-         <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+          <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
             <FormControlLabel
               control={<Switch size="small" checked={isDetailedMode} onChange={(e) => setIsDetailedMode(e.target.checked)} />}
               label={<Typography variant="caption">{isDetailedMode ? 'Detailed' : 'Simple'}</Typography>}
@@ -397,25 +397,25 @@ export default function ChatPanel() {
             </Tooltip>
           </Stack>
         </Box>
-        
+
         {/* Chat Messages */}
         <Box role="main" sx={{ flexGrow: 1, overflowY: 'auto', p: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
           <AnimatePresence initial={false}>
             {messages.map((msg, idx) => (
-              <motion.div 
-                key={idx} 
-                initial={{ opacity: 0, scale: 0.95, y: 10 }} 
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, scale: 0.95, y: 10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                style={{ 
+                style={{
                   alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
                   maxWidth: '85%'
                 }}
               >
                 <Box sx={{ display: 'flex', flexDirection: msg.role === 'user' ? 'row-reverse' : 'row', gap: 1, alignItems: 'flex-start' }}>
-                  <Box 
-                    sx={{ 
-                      p: 2, 
-                      borderRadius: 3, 
+                  <Box
+                    sx={{
+                      p: 2,
+                      borderRadius: 3,
                       bgcolor: msg.role === 'user' ? 'secondary.main' : '#F7F9FC',
                       color: msg.role === 'user' ? 'white' : 'text.primary',
                       borderBottomRightRadius: msg.role === 'user' ? 2 : 12,
@@ -432,7 +432,7 @@ export default function ChatPanel() {
               </motion.div>
             ))}
           </AnimatePresence>
-          
+
           {isLoading && (
             <Box sx={{ alignSelf: 'flex-start', ml: 1 }}>
               <Box sx={{ display: 'flex', gap: 0.5, p: 1.5, bgcolor: '#F7F9FC', borderRadius: 3 }}>
@@ -450,12 +450,12 @@ export default function ChatPanel() {
           <Box sx={{ px: 2, pb: 1, pt: 1, bgcolor: '#F7F9FC', borderTop: '1px solid rgba(0,0,0,0.03)' }}>
             <Stack direction="row" spacing={1} sx={{ overflowX: 'auto', pb: 1, '&::-webkit-scrollbar': { height: '4px' }, '&::-webkit-scrollbar-thumb': { bgcolor: 'rgba(0,0,0,0.1)' } }}>
               {quickActionsTranslated.map((action, idx) => (
-                <Chip 
-                  key={idx} 
-                  label={action.label} 
-                  onClick={() => handleSend(action.query)} 
-                  variant="outlined" 
-                  clickable 
+                <Chip
+                  key={idx}
+                  label={action.label}
+                  onClick={() => handleSend(action.query)}
+                  variant="outlined"
+                  clickable
                   sx={{ borderRadius: 2, borderColor: 'primary.light', color: 'primary.main', bgcolor: 'white' }}
                 />
               ))}
@@ -465,19 +465,19 @@ export default function ChatPanel() {
 
         {/* Chat Input */}
         <Box sx={{ p: 2, bgcolor: '#F7F9FC' }}>
-          <Box 
-            sx={{ 
-              display: 'flex', 
-              gap: 1, 
-              bgcolor: 'white', 
-              borderRadius: 10, 
-              p: 0.5, 
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 1,
+              bgcolor: 'white',
+              borderRadius: 10,
+              p: 0.5,
               pl: 2,
               border: '1px solid rgba(0,0,0,0.08)'
             }}
           >
-            <TextField 
-              fullWidth 
+            <TextField
+              fullWidth
               variant="standard"
               placeholder={activeScenario ? 'Reply Yes or No...' : t('Ask your Civic Guide...', 'मतदान के बारे में पूछें...')}
               value={input}
@@ -487,12 +487,12 @@ export default function ChatPanel() {
               slotProps={{ htmlInput: { 'aria-label': 'Chat input' }, input: { disableUnderline: true } }}
               sx={{ mt: 0.5 }}
             />
-            <IconButton 
-              color="primary" 
+            <IconButton
+              color="primary"
               aria-label="Send message"
               onClick={() => handleSend(input)}
               disabled={isLoading || !input.trim()}
-              sx={{ 
+              sx={{
                 bgcolor: 'primary.main',
                 color: 'white',
                 '&:hover': { bgcolor: 'primary.dark' },
@@ -512,7 +512,7 @@ export default function ChatPanel() {
           <Typography variant="body2" sx={{ mb: 3 }}>Help us tailor our guidance to your needs.</Typography>
           <FormControl component="fieldset">
             <FormLabel component="legend">Are you a first-time voter?</FormLabel>
-            <RadioGroup row value={profile.isFirstTime ? 'yes' : 'no'} onChange={(e) => setProfile({...profile, isFirstTime: e.target.value === 'yes'})}>
+            <RadioGroup row value={profile.isFirstTime ? 'yes' : 'no'} onChange={(e) => setProfile({ ...profile, isFirstTime: e.target.value === 'yes' })}>
               <FormControlLabel value="yes" control={<Radio />} label="Yes" />
               <FormControlLabel value="no" control={<Radio />} label="No" />
             </RadioGroup>

@@ -1,4 +1,4 @@
-import { KnowledgeResponse } from '../data/knowledgeBase';
+import type { KnowledgeResponse } from '@/types/knowledge';
 
 const translationCache = new Map<string, string>();
 
@@ -25,14 +25,14 @@ export async function translateText(text: string, targetLang: string, sourceLang
   try {
     const encodedText = encodeURIComponent(text);
     const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q=${encodedText}`;
-    
+
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    
+
     const data = await response.json();
-    
+
     // The API returns an array of arrays. The translated string pieces are in the first element.
     let translated = '';
     if (data && data[0]) {
@@ -42,13 +42,13 @@ export async function translateText(text: string, targetLang: string, sourceLang
         }
       }
     }
-    
+
     if (translated) {
       // Store in cache
       translationCache.set(cacheKey, translated);
       return translated;
     }
-    
+
     return text; // Fallback to original text if parsing fails
   } catch (error) {
     console.error('Translation error:', error);
@@ -63,17 +63,21 @@ export async function translateText(text: string, targetLang: string, sourceLang
  * @param data The KnowledgeResponse object to translate.
  * @param targetLang The language code to translate to (e.g., 'hi', 'ta').
  * @returns A Promise resolving to a new, translated KnowledgeResponse object.
+ * Translates structured response into selected language
+ * @param data structured response object
+ * @param language selected language
+ * @returns translated structured response
  */
 export async function translateStructuredResponse(data: KnowledgeResponse, targetLang: string): Promise<KnowledgeResponse> {
   if (targetLang === 'en') return data; // No translation needed
 
   try {
     const translatedExplanation = await translateText(data.explanation, targetLang);
-    
+
     const translatedSteps = await Promise.all(
       (data.steps || []).map((step: string) => translateText(step, targetLang))
     );
-    
+
     const translatedTips = await Promise.all(
       (data.tips || []).map((tip: string) => translateText(tip, targetLang))
     );
