@@ -259,7 +259,7 @@ export default function ChatPanel() {
          };
       }
 
-      const finalData = await translateStructuredResponse(finalResultData as unknown as Record<string, unknown>, language);
+      const finalData = await translateStructuredResponse(finalResultData as unknown as KnowledgeResponse, language);
 
       setMessages(prev => [...prev, { role: 'assistant', content: '', data: finalData }]);
       saveToFirestore(trimmedText, finalData.explanation, finalData);
@@ -484,8 +484,7 @@ export default function ChatPanel() {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend(input)}
               disabled={isLoading}
-              inputProps={{ 'aria-label': 'Chat input' }}
-              slotProps={{ input: { disableUnderline: true } }}
+              slotProps={{ htmlInput: { 'aria-label': 'Chat input' }, input: { disableUnderline: true } }}
               sx={{ mt: 0.5 }}
             />
             <IconButton 
